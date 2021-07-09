@@ -1,7 +1,12 @@
 <template>
   <div>
     <!-- 三级分类 -->
-    <el-form :inline="true" :model="attrForm" class="demo-form-inline">
+    <el-form
+      :inline="true"
+      :model="attrForm"
+      class="demo-form-inline"
+      :disabled="!isShowAdd"
+    >
       <el-form-item label="一级分类">
         <el-select
           v-model="attrForm.category1id"
@@ -64,6 +69,9 @@ export default {
       category2list: [],
       category3list: [],
     };
+  },
+  props: {
+    isShowAdd: Boolean,
   },
   methods: {
     async getCategory1() {
