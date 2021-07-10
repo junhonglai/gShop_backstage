@@ -8,7 +8,11 @@
     </el-card>
     <!-- spu表格 -->
     <el-card class="box-card spu-card" v-show="isShowAdd">
-      <el-button type="primary" icon="el-icon-plus" @click="showSpuForm"
+      <el-button
+        type="primary"
+        icon="el-icon-plus"
+        @click="showSpuForm"
+        :disabled="!category3id"
         >添加SPU</el-button
       >
       <el-table :data="spuList" border style="width: 100%" class="spu-table">
@@ -17,7 +21,7 @@
         <el-table-column prop="spuName" label="SPU名称"> </el-table-column>
         <el-table-column prop="description" label="SPU描述"> </el-table-column>
         <el-table-column label="操作">
-          <template>
+          <template slot-scope="{ row }">
             <HintButton
               title="添加SKU"
               type="success"
@@ -30,20 +34,27 @@
               type="primary"
               size="mini"
               icon="el-icon-edit"
-              @click="showSpuForm"
+              @click="showSpuForm(row)"
             ></HintButton>
             <HintButton
+              style="margin-right: 10px"
               title="查看SKU列表"
               type="info"
               size="mini"
               icon="el-icon-info"
             ></HintButton>
-            <HintButton
-              title="删除SPU"
-              type="danger"
-              size="mini"
-              icon="el-icon-delete"
-            ></HintButton>
+            <el-popconfirm
+              :title="`确定删除${row.spuName}吗？`"
+              @onConfirm="deleteSpu(row.id)"
+            >
+              <HintButton
+                slot="reference"
+                title="删除SPU"
+                type="danger"
+                size="mini"
+                icon="el-icon-delete"
+              ></HintButton>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -63,9 +74,16 @@
       >
       </el-pagination>
     </el-card>
-    
+
     <div class="box-card spu-card">
-      <spuForm v-show="isShowSpuForm"></spuForm>
+      <spuForm
+        v-show="isShowSpuForm"
+        ref="spuForm"
+        :isShowSpuForm.sync="isShowSpuForm"
+        :category3Id="category3id"
+        @success="success"
+        @cancle="cancle"
+      ></spuForm>
       <skuForm v-show="isShowSkuForm"></skuForm>
     </div>
   </div>
@@ -114,14 +132,17 @@ export default {
     },
 
     // 请求spu列表
-    async getSpuList() {
+    async getSpuList(page) {
       const {
         data: { records, total },
       } = await this.$API.spu.getSpuList(
-        this.page,
+        page ? page : this.page,
         this.limit,
         this.category3id
       );
+      if (page) {
+        this.page = page;
+      }
       this.total = total;
       this.spuList = records;
       // console.log(records, total);
@@ -141,12 +162,47 @@ export default {
     },
 
     // 用于监听点击添加SPU和修改SPU时spuForm的显示
-    showSpuForm() {
+    showSpuForm(row) {
       this.isShowSpuForm = true;
+      // 当spuForm显示时，通知其发送请求
+      console.log(row.id);
+      if (row.id) {
+        // 有id就是修改
+        this.flag = true;
+        this.$refs.spuForm.initUpdate(row.id);
+      } else {
+        this.$refs.spuForm.initAdd();
+      }
+      // console.log(this.$refs.spuForm.spuForm);
     },
     // 用于监听点击添加SPU和修改SPU时showSkuForm的显示
     showSkuForm() {
       this.isShowSkuForm = true;
+    },
+    // 监听spuForm保存成功时重新获取数据
+    success() {
+      if (this.flag) {
+        this.getSpuList();
+      } else {
+        this.getSpuList(1);
+      }
+      this.flag = false;
+    },
+    // 监听用户点击是取消时将标识flag置为false
+    cancle() {
+      this.flag = false;
+    },
+    // 删除spu
+    async deleteSpu(id) {
+      // console.log(1,id);
+      try {
+        // 发送请求
+        await this.$API.spu.deleteSpu(id);
+        this.getSpuList();
+        this.$message.success("删除成功！！！");
+      } catch (error) {
+        this.$message.info("删除失败！！！");
+      }
     },
   },
   computed: {

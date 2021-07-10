@@ -40,5 +40,12 @@ export default {
       method:'GET',
       url:`/admin/product/baseTrademark/${page}/${limit}`
     })
+  },
+  // 获取品牌
+  getTrademarks(){
+    return request({
+      method:'GET',
+      url:`/admin/product/baseTrademark/getTrademarkList`
+    })
   }
 };
