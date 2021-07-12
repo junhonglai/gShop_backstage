@@ -233,7 +233,7 @@ export default {
         return item.saleAttrValueName === inputValue;
       });
       // 判断属性值是否为空
-      if (!inputValue) {
+      if (!inputValue.trim()) {
         this.$message.info("属性值不能为空!!!");
         return;
       }

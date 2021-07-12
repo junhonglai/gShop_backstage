@@ -27,7 +27,7 @@
               type="success"
               size="mini"
               icon="el-icon-plus"
-              @click="showSkuForm"
+              @click="showSkuForm(row)"
             ></HintButton>
             <HintButton
               title="修改SPU"
@@ -42,6 +42,7 @@
               type="info"
               size="mini"
               icon="el-icon-info"
+              @click="handleCheck(row)"
             ></HintButton>
             <el-popconfirm
               :title="`确定删除${row.spuName}吗？`"
@@ -84,8 +85,32 @@
         @success="success"
         @cancle="cancle"
       ></spuForm>
-      <skuForm v-show="isShowSkuForm"></skuForm>
+      <skuForm
+        v-show="isShowSkuForm"
+        ref="skuForm"
+        :isShowSkuForm.sync="isShowSkuForm"
+      ></skuForm>
     </div>
+    <!-- dialog -->
+    <el-dialog
+      :title="`${spuName} => SKU列表`"
+      :visible.sync="dialogTableVisible"
+    >
+      <el-table border v-loading="!skuInfoList.length" :data="skuInfoList">
+        <el-table-column label="名称" prop="skuName"></el-table-column>
+        <el-table-column label="价格(元)" prop="price"></el-table-column>
+        <el-table-column label="重量(KG)" prop="weight"></el-table-column>
+        <el-table-column label="默认图片">
+          <template slot-scope="{ row }">
+            <img
+              :src="row.skuDefaultImg"
+              :alt="row.skuName"
+              style="width: 100px; height: 100px"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -105,8 +130,11 @@ export default {
       total: 0,
 
       spuList: [],
+      spuName: "",
       isShowSpuForm: false,
       isShowSkuForm: false,
+      dialogTableVisible: false,
+      skuInfoList: [],
     };
   },
   components: {
@@ -176,8 +204,11 @@ export default {
       // console.log(this.$refs.spuForm.spuForm);
     },
     // 用于监听点击添加SPU和修改SPU时showSkuForm的显示
-    showSkuForm() {
+    showSkuForm(spu) {
+      console.log(spu);
       this.isShowSkuForm = true;
+      const { category1id, category2id, category3id } = this;
+      this.$refs.skuForm.initAdd(spu, category1id, category2id, category3id);
     },
     // 监听spuForm保存成功时重新获取数据
     success() {
@@ -203,6 +234,19 @@ export default {
       } catch (error) {
         this.$message.info("删除失败！！！");
       }
+    },
+    // 监听用户查看sku列表
+    async handleCheck(row) {
+      this.spuName = row.spuName;
+      // 发送请求
+      try {
+        const res = await this.$API.sku.getSkuList(row.id);
+        this.skuInfoList = res.data;
+        // console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+      this.dialogTableVisible = true;
     },
   },
   computed: {

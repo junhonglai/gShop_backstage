@@ -1,10 +1,11 @@
 <template>
   <div>
-    <el-button type="primary" icon="el-icon-plus" @click="showDialog"
-      >添加</el-button
-    >
+    <el-button type="primary" icon="el-icon-plus" @click="showDialog">
+      添加
+    </el-button>
     <!-- 品牌表格 -->
     <el-table
+      v-loading="!trademarkList.length"
       :data="trademarkList"
       border
       style="width: 100%"
@@ -221,23 +222,23 @@ export default {
       })
         .then(async () => {
           // try {
-            // 发送删除请求
-            await this.$API.trademark.deleteTrademark(row.id);
-            // // // 请求新的品牌列表
-            // if (this.page >= this.totalPage) {
-            //   this.page = this.totalPage;
-            //   console.log(this.page);
-            //   // this.getTrademark();
-            // }
-            this.getTrademark(
-              this.trademarkList.length > 1 ? this.page : this.page - 1
-            );
-            // console.log(this.page);
-            // 用户提示
-            this.$message({
-              type: "success",
-              message: "删除成功!",
-            });
+          // 发送删除请求
+          await this.$API.trademark.deleteTrademark(row.id);
+          // // // 请求新的品牌列表
+          // if (this.page >= this.totalPage) {
+          //   this.page = this.totalPage;
+          //   console.log(this.page);
+          //   // this.getTrademark();
+          // }
+          this.getTrademark(
+            this.trademarkList.length > 1 ? this.page : this.page - 1
+          );
+          // console.log(this.page);
+          // 用户提示
+          this.$message({
+            type: "success",
+            message: "删除成功!",
+          });
           // } catch (error) {
           //   console.log(error);
           // }
