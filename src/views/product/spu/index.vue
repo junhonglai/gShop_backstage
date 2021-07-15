@@ -96,7 +96,8 @@
       :title="`${spuName} => SKU列表`"
       :visible.sync="dialogTableVisible"
     >
-      <el-table border v-loading="!skuInfoList.length" :data="skuInfoList">
+      <!-- v-loading="!skuInfoList.length" -->
+      <el-table border :data="skuInfoList">
         <el-table-column label="名称" prop="skuName"></el-table-column>
         <el-table-column label="价格(元)" prop="price"></el-table-column>
         <el-table-column label="重量(KG)" prop="weight"></el-table-column>
@@ -115,8 +116,8 @@
 </template>
 
 <script>
-import spuForm from "./spuForm.vue";
-import skuForm from "./skuForm.vue";
+import spuForm from "../components/spuForm.vue";
+import skuForm from "../components/skuForm.vue";
 
 export default {
   name: "SPU",

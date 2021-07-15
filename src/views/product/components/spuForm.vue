@@ -121,13 +121,20 @@
                 :title="`确定删除${row.saleAttrName}吗？`"
                 @onConfirm="deleteAttrName($index)"
               >
-                <HintButton
+                <!-- <HintButton
                   slot="reference"
                   title="删除"
                   type="danger"
                   size="mini"
                   icon="el-icon-delete"
-                ></HintButton>
+                ></HintButton> -->
+                <el-button
+                  slot="reference"
+                  title="删除"
+                  type="danger"
+                  size="mini"
+                  icon="el-icon-delete"
+                ></el-button>
               </el-popconfirm>
             </template>
           </el-table-column>
@@ -233,7 +240,7 @@ export default {
         return item.saleAttrValueName === inputValue;
       });
       // 判断属性值是否为空
-      if (!inputValue.trim()) {
+      if (!inputValue.trim() && this.inputVisible) {
         this.$message.info("属性值不能为空!!!");
         return;
       }

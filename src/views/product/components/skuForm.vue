@@ -79,8 +79,8 @@
       </el-form-item>
       <!-- 图片列表 -->
       <el-form-item label="图片列表">
+        <!-- v-loading="!imageList.length" -->
         <el-table
-          v-loading="!imageList.length"
           :data="imageList"
           border
           @select="handleSelect"
@@ -98,7 +98,7 @@
           </el-table-column>
           <el-table-column label="名称" prop="imgName"></el-table-column>
           <el-table-column label="操作">
-            <template slot-scope="{row}">
+            <template slot-scope="{ row }">
               <el-button
                 v-if="row.isDefault === '0'"
                 type="primary"
